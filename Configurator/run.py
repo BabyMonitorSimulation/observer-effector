@@ -2,6 +2,6 @@ from project import app
 
 
 if __name__ == "__main__":
-    port = 5001
-    print(f'Run Observer port:{port} \n')
-    socketio.run(app, port=port)
+    port = 5003
+    print(f'Run Configurator (Middleware) port:{port} \n')
+    app.run(port=port, debug=True)

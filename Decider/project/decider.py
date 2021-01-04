@@ -5,7 +5,6 @@ from time import sleep
 from pyrabbit.api import Client
 from project.solution.observer_service import ObserverService
 from project.solution.observer_model import ObserverModel
-from project import socketio
 
 
 class Observer(threading.Thread):
@@ -86,6 +85,8 @@ class Observer(threading.Thread):
                 ObserverService(ObserverModel).insert_data({"success": True})
                 self.adaptation = False
                 self.return_normal_behave()
+
+    [{"type_msg": "action"}, {"type_msg": "action"}, ...]
 
         # Momento da adaptação
         if message["type"] == "status" and source == "st_info" and message["block"]:

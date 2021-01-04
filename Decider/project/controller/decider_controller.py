@@ -1,5 +1,6 @@
-from project import app
+from project.publisher.decider_publisher import DeciderPublisher
 from flask import jsonify, request
+from project import app
 from time import sleep
 
 
@@ -8,16 +9,22 @@ def index():
     return jsonify({"msg": "ok"})
 
 
-@app.route("/start", methods=["GET"])
+@app.route("/start", methods=["POST"])
 def start():
-    body = request.json
+    DeciderPublisher(request.json).start()
+    print("Start OK")
     return jsonify({"msg": "ok"})
-
 
 '''
 {
     "interface_type": "",
     "messages_types": [],
+    "config_broker": {
+        "host": "",
+        "user": "",
+        "password": "",
+        "exchanges": [],
+    },
     "exceptional_scenario": [],
     "steps_to_adapt": [{
         "method": "",
@@ -29,5 +36,4 @@ def start():
     }],
 }
 '''
-
-[{"topic": "tv_msg", "type": "notificaiton"}, {"topic": "tv_info", "msg": "blocked"}]
+# [{"topic": "tv_msg", "type": "notificaiton"}, {"topic": "tv_info", "msg": "blocked"}]

@@ -5,7 +5,7 @@ from time import sleep
 from pyrabbit.api import Client
 
 
-class ObserverSubscriber(threading.Thread):
+class DeciderPublisher(threading.Thread):
     def __init__(self, config):
         threading.Thread.__init__(self)
         self.queue = "observer"
@@ -24,10 +24,6 @@ class ObserverSubscriber(threading.Thread):
 
         bindings = client.get_bindings()
         bindings_result = [b for b in bindings if b["source"] in self.config_broker["exchanges"]]
-
-        # for b in bindings:
-        #     if b["source"] == "exchange_baby_monitor":
-        #         bindings_result.append(b)
 
         return bindings_result
 
