@@ -1,7 +1,9 @@
-from project.publisher.decider_publisher import DeciderPublisher
+from project.entity.decider_entity import Decider
 from flask import jsonify, request
 from project import app
-from time import sleep
+
+
+decider = None
 
 
 @app.route("/index", methods=["GET"])
@@ -9,13 +11,33 @@ def index():
     return jsonify({"msg": "ok"})
 
 
-@app.route("/start", methods=["POST"])
-def start():
-    DeciderPublisher(request.json).start()
+@app.route("/adapt", methods=["GET"])
+def adapt():
+    global decider
+    decider.adapt()
+
+    return jsonify({"msg": "Adaptation ocurred"})
+
+
+@app.route("/behave_normal", methods=["GET"])
+def behave_normal():
+    global decider
+    decider.behave_normal()
+
+    return jsonify({"msg": "Returned to previous behavior"})
+
+
+@app.route("/configure", methods=["POST"])
+def configure():
+    global decider
+    decider = Decider(
+        request.json["steps_to_adapt"], request.json["steps_for_behave_normal"]
+    )
     print("Start OK")
     return jsonify({"msg": "ok"})
 
-'''
+
+"""
 {
     "interface_type": "",
     "messages_types": [],
@@ -35,5 +57,5 @@ def start():
         "route": "",
     }],
 }
-'''
+"""
 # [{"topic": "tv_msg", "type": "notificaiton"}, {"topic": "tv_info", "msg": "blocked"}]

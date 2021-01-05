@@ -17,23 +17,37 @@ def start():
 
 '''
 {
-    "interface_type": "",
-    "messages_types": [],
+    "interface_type": "broker",
     "config_broker": {
-        "host": "",
-        "user": "",
-        "password": "",
-        "exchanges": [],
+        "host": "localhost",
+        "user": "guest",
+        "password": "guest",
+        "port": "15672",
+        "exchanges": ["exchange_baby_monitor"]
     },
-    "exceptional_scenario": [],
+    "exceptional_scenario": [
+        {"topic": "tv_msg", "type": "notificaiton"},
+        {"topic": "tv_info", "msg": "blocked"}
+    ],
+    "normal_messages": [
+        {"topic": "bm_info","type": "status"}
+    ],
+    "critical_messages":[
+        {"topic": "bm_info", "type": "notification"}
+    ],
     "steps_to_adapt": [{
-        "method": "",
-        "route": "",
+        "method": "POST",
+        "url": "http://localhost:5000/change_tv_status",
+        "boby": {
+            "lock": false
+        }
     }],
     "steps_for_behave_normal": [{
-        "method": "",
-        "route": "",
-    }],
+        "method": "POST",
+        "url": "http://localhost:5000/change_tv_status",
+        "boby": {
+            "lock": true
+        }
+    }]
 }
 '''
-# [{"topic": "tv_msg", "type": "notificaiton"}, {"topic": "tv_info", "msg": "blocked"}]

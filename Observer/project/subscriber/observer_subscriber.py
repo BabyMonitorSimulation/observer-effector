@@ -3,13 +3,18 @@ import json
 import threading
 from time import sleep
 from pyrabbit.api import Client
-
+from project.util.data import add_new
+import requests
 
 class ObserverSubscriber(threading.Thread):
     def __init__(self, config):
         threading.Thread.__init__(self)
         self.queue = "observer"
         self.config_broker = config["config_broker"]
+        self.exceptional_scenario = config["exceptional_scenario"]
+        self.essential_scenarios = []
+        self.normal_messages = config["normal_messages"]
+        self.critical_messages = config["critical_messages"]
         self.connection = pika.BlockingConnection(
             pika.ConnectionParameters(host=self.config_broker["host"])
         )
@@ -25,15 +30,10 @@ class ObserverSubscriber(threading.Thread):
         bindings = client.get_bindings()
         bindings_result = [b for b in bindings if b["source"] in self.config_broker["exchanges"]]
 
-        # for b in bindings:
-        #     if b["source"] == "exchange_baby_monitor":
-        #         bindings_result.append(b)
-
         return bindings_result
 
     def subscribe_in_all_queues(self):
         bindings = self.get_bindings()
-
         for bind in bindings:
             self.channel.queue_bind(
                 exchange=bind["source"],
@@ -43,10 +43,26 @@ class ObserverSubscriber(threading.Thread):
 
         return bindings
 
-    def callback(self, ch, method, properties, body):
+    def callback(self, ch, method, properties, data):
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        body = json.loads(body.decode("UTF-8"))
-        print(f"Receive {body}")
+        data = json.loads(data.decode("UTF-8"))
+
+        current_scenario = {"topic": method.routing_key, "type": data["type"]}
+        print(f'Current Scenario: {current_scenario}')
+        print(f'Exceptional Scenario: {self.exceptional_scenario}')
+        if current_scenario in self.exceptional_scenario:
+            self.essential_scenarios = add_new(self.essential_scenarios, 
+                                               current_scenario)
+
+        print(f'essential Scenario: {list(self.essential_scenarios)} \n\n')
+        if self.essential_scenarios == self.exceptional_scenario:
+            print("Cenário excepcional")
+            requests.get(url='http://localhost:5002/adapt')
+
+        if current_scenario == self.normal_messages:
+            print('Cenário normal')
+            requests.get(url='http://localhost:5002/behave_normal')
+            self.essential_scenarios = []
 
 
     def run(self):
@@ -58,4 +74,3 @@ class ObserverSubscriber(threading.Thread):
 
     def stop(self):
         raise SystemExit()
-

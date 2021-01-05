@@ -16,6 +16,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-from .controller import observer_controller
+from .controller import decider_controller
 
 db.create_all()

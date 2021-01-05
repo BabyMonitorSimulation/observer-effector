@@ -16,7 +16,7 @@ def start():
         config_observer = data_config_observer(request.json)
         config_decider = data_config_decider(request.json)
         requests.post("http://localhost:5001/start", json=config_observer)
-        # requests.post("http://localhost:5002/", json=config_decider)
+        requests.post("http://localhost:5002/configure", json=config_decider)
 
     if request.json["interface_type"] == "middleware":
         pass
@@ -28,6 +28,8 @@ def data_config_observer(request_json: dict):
     return {
             "config_broker": request_json["config_broker"],
             "exceptional_scenario": request_json["exceptional_scenario"],
+            "normal_messages": request_json["normal_messages"],
+            "critical_messages": request_json["critical_messages"],
            }
 
 def data_config_decider(request_json: dict):
