@@ -1,0 +1,51 @@
+{
+    "interface_type": "broker",
+    "config_broker": {
+        "host": "localhost",
+        "user": "guest",
+        "password": "guest",
+        "port": "15672",
+        "exchanges": [
+            "exchange_baby_monitor"
+        ]
+    },
+    "exceptional_scenario": {
+        "tv_blocked": [{
+                "topic": "st_msg",
+                "type": "notification",
+                "body": "*"
+            },
+            {
+                "topic": "st_info",
+                "type": "status",
+                "body": { "block": true }
+            }
+        ]
+    },
+    "normal_messages": [{
+        "topic": "bm_info",
+        "type": "status"
+    }],
+    "critical_messages": [{
+        "topic": "bm_info",
+        "type": "notification"
+    }],
+    "steps_to_adapt": {
+        "tv_blocked": [{
+            "method": "POST",
+            "url": "http://localhost:5000/change_tv_status",
+            "body": {
+                "lock": false
+            }
+        }]
+    },
+    "steps_for_behave_normal": {
+        "tv_blocked": [{
+            "method": "POST",
+            "url": "http://localhost:5000/change_tv_status",
+            "body": {
+                "lock": true
+            }
+        }]
+    }
+}

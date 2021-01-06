@@ -14,7 +14,8 @@ def index():
 @app.route("/adapt", methods=["GET"])
 def adapt():
     global decider
-    decider.adapt()
+    scenario = request.args.get('scenario')
+    decider.adapt(scenario)
 
     return jsonify({"msg": "Adaptation ocurred"})
 
@@ -22,7 +23,8 @@ def adapt():
 @app.route("/behave_normal", methods=["GET"])
 def behave_normal():
     global decider
-    decider.behave_normal()
+    scenario = request.args.get('scenario')
+    decider.behave_normal(scenario)
 
     return jsonify({"msg": "Returned to previous behavior"})
 
