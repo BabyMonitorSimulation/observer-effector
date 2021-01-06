@@ -57,14 +57,13 @@ class ObserverSubscriber(threading.Thread):
                                                current_scenario)
 
         except_scen = self.essential_scenarios == self.exceptional_scenario
-        print(f'CALL: {self.call_one}')
         print(f'essential Scenario: {list(self.essential_scenarios)} \n\n')
         if except_scen and self.call_one:
             print("==== Cenário excepcional ====")
             requests.get(url='http://localhost:5002/adapt')
             self.call_one = False
 
-        # Como podemos pegar uma lista de cenários normais?
+        # TODO: Como podemos pegar uma lista de cenários normais?
         # Por isso usamos self.normal_messages[0] por enquanto
         if current_scenario == self.normal_messages[0] and except_scen:
             print('==== Cenário NORMAL ====')
