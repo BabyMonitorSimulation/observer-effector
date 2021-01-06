@@ -1,10 +1,10 @@
 import pika
 import json
 import threading
-from time import sleep
 from pyrabbit.api import Client
 from project.util.data import add_new
 import requests
+
 
 class ObserverSubscriber(threading.Thread):
     def __init__(self, config):
@@ -18,6 +18,7 @@ class ObserverSubscriber(threading.Thread):
         self.connection = pika.BlockingConnection(
             pika.ConnectionParameters(host=self.config_broker["host"])
         )
+        self.call_one = True
         self.channel = self.connection.channel()
         self.channel.queue_declare(self.queue)
         self.subscribe_in_all_queues()
@@ -50,20 +51,26 @@ class ObserverSubscriber(threading.Thread):
         current_scenario = {"topic": method.routing_key, "type": data["type"]}
         print(f'Current Scenario: {current_scenario}')
         print(f'Exceptional Scenario: {self.exceptional_scenario}')
-        if current_scenario in self.exceptional_scenario:
-            self.essential_scenarios = add_new(self.essential_scenarios, 
+        is_essential_scenarios = self.is_essential_scenarios(current_scenario)
+        if is_essential_scenarios:
+            self.essential_scenarios = add_new(self.essential_scenarios,
                                                current_scenario)
 
+        except_scen = self.essential_scenarios == self.exceptional_scenario
+        print(f'CALL: {self.call_one}')
         print(f'essential Scenario: {list(self.essential_scenarios)} \n\n')
-        if self.essential_scenarios == self.exceptional_scenario:
-            print("Cenário excepcional")
+        if except_scen and self.call_one:
+            print("==== Cenário excepcional ====")
             requests.get(url='http://localhost:5002/adapt')
+            self.call_one = False
 
-        if current_scenario == self.normal_messages:
-            print('Cenário normal')
+        # Como podemos pegar uma lista de cenários normais?
+        # Por isso usamos self.normal_messages[0] por enquanto
+        if current_scenario == self.normal_messages[0] and except_scen:
+            print('==== Cenário NORMAL ====')
             requests.get(url='http://localhost:5002/behave_normal')
             self.essential_scenarios = []
-
+            self.call_one = True
 
     def run(self):
         self.channel.basic_consume(
@@ -74,3 +81,13 @@ class ObserverSubscriber(threading.Thread):
 
     def stop(self):
         raise SystemExit()
+
+    def is_essential_scenarios(self, current_scenario):
+        if self.essential_scenarios == self.exceptional_scenario:
+            return False
+
+        index_scenario = len(self.essential_scenarios)
+        if current_scenario == self.exceptional_scenario[index_scenario]:
+            return True
+
+        return False

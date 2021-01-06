@@ -10,10 +10,14 @@ class Decider:
         for step in self.steps_to_adapt:
             print("I'm adapting")
             print(f"STEP: {step}")
-            requests.request(method=step["method"], url=step["url"], data=step["body"])
+            requests.request(method=step["method"],
+                             url=step["url"],
+                             json=step["body"])
 
     def behave_normal(self):
         for step in self.steps_for_behave_normal:
             print("I'm returning to normal")
             print(f"STEP: {step}")
-            requests.request(method=step["method"], url=step["url"], data=step["body"])
+            requests.request(method=step["method"],
+                             url=step["url"],
+                             json=step["body"])
