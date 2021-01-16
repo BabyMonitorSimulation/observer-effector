@@ -26,36 +26,14 @@ def start():
 
 def data_config_observer(request_json: dict):
     return {
-            "config_broker": request_json["config_broker"],
-            "exceptional_scenario": request_json["exceptional_scenario"],
-            "normal_messages": request_json["normal_messages"],
-            "critical_messages": request_json["critical_messages"],
-           }
+        "connection_config": request_json["connection_config"],
+        "normal_scenario": request_json["normal_scenario"],
+        "exceptional_scenario": request_json["exceptional_scenario"],
+    }
+
 
 def data_config_effector(request_json: dict):
     return {
-            "steps_to_adapt": request_json["steps_to_adapt"],
-            "steps_for_behave_normal": request_json["steps_for_behave_normal"],
-           }
-
-'''
-{
-    "interface_type": "",
-    "messages_types": [],
-    "config_broker": {
-        "host": "",
-        "user": "",
-        "password": "",
-        "exchanges": [],
-    },
-    "exceptional_scenario": [],
-    "steps_to_adapt": [{
-        "method": "",
-        "route": "",
-    }],
-    "steps_for_behave_normal": [{
-        "method": "",
-        "route": "",
-    }],
-}
-'''
+        "adaptation_actions": request_json["adaptation_actions"],
+        "return_to_normal_actions": request_json["return_to_normal_actions"],
+    }

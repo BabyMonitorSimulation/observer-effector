@@ -14,7 +14,7 @@ def index():
 @app.route("/adapt", methods=["GET"])
 def adapt():
     global effector
-    scenario = request.args.get('scenario')
+    scenario = request.args.get("scenario")
     effector.adapt(scenario)
 
     return jsonify({"msg": "Adaptation ocurred"})
@@ -23,7 +23,7 @@ def adapt():
 @app.route("/behave_normal", methods=["GET"])
 def behave_normal():
     global effector
-    scenario = request.args.get('scenario')
+    scenario = request.args.get("scenario")
     effector.behave_normal(scenario)
 
     return jsonify({"msg": "Returned to previous behavior"})
@@ -33,31 +33,9 @@ def behave_normal():
 def configure():
     global effector
     effector = Effector(
-        request.json["steps_to_adapt"], request.json["steps_for_behave_normal"]
+        request.json["adaptation_actions"],
+        request.json["return_to_normal_actions"]
     )
     print("Start OK")
     return jsonify({"msg": "ok"})
 
-
-"""
-{
-    "interface_type": "",
-    "messages_types": [],
-    "config_broker": {
-        "host": "",
-        "user": "",
-        "password": "",
-        "exchanges": [],
-    },
-    "exceptional_scenario": [],
-    "steps_to_adapt": [{
-        "method": "",
-        "route": "",
-    }],
-    "steps_for_behave_normal": [{
-        "method": "",
-        "route": "",
-    }],
-}
-"""
-# [{"topic": "tv_msg", "type": "notificaiton"}, {"topic": "tv_info", "msg": "blocked"}]

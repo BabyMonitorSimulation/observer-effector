@@ -1,14 +1,13 @@
-class Observer():
+class Observer:
     def __init__(self, config):
         self.exceptional_scenario = config["exceptional_scenario"]
         self.essential_scenarios = []
         self.scenario_running = ""
-        self.normal_messages = config["normal_messages"]
-        self.critical_messages = config["critical_messages"]
+        self.normal_scenario = config["normal_scenario"]
 
     def check_normal_scenario(self, current_scenario):
         check = []
-        for i in self.normal_messages:
+        for i in self.normal_scenario:
             check = []
             for k, v in current_scenario.items():
                 if k in i.keys():

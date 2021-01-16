@@ -1,6 +1,6 @@
 {
     "interface_type": "broker",
-    "config_broker": {
+    "connection_config": {
         "host": "localhost",
         "user": "guest",
         "password": "guest",
@@ -9,6 +9,10 @@
             "exchange_baby_monitor"
         ]
     },
+    "normal_scenario": [{
+        "topic": "bm_info",
+        "type": "status"
+    }],
     "exceptional_scenario": {
         "tv_blocked": [{
                 "topic": "st_msg",
@@ -22,15 +26,7 @@
             }
         ]
     },
-    "normal_messages": [{
-        "topic": "bm_info",
-        "type": "status"
-    }],
-    "critical_messages": [{
-        "topic": "bm_info",
-        "type": "notification"
-    }],
-    "steps_to_adapt": {
+    "adaptation_actions": {
         "tv_blocked": [{
             "method": "POST",
             "url": "http://localhost:5000/change_tv_status",
@@ -39,7 +35,7 @@
             }
         }]
     },
-    "steps_for_behave_normal": {
+    "return_to_normal_actions": {
         "tv_blocked": [{
             "method": "POST",
             "url": "http://localhost:5000/change_tv_status",

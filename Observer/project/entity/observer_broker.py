@@ -11,9 +11,9 @@ class ObserverBroker(threading.Thread, Observer):
     def __init__(self, config):
         threading.Thread.__init__(self)
         self.queue = "observer"
-        self.config_broker = config["config_broker"]
+        self.connection_config = config["connection_config"]
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=self.config_broker["host"])
+            pika.ConnectionParameters(host=self.connection_config["host"])
         )
         self.call_one = True
         self.channel = self.connection.channel()
@@ -22,14 +22,14 @@ class ObserverBroker(threading.Thread, Observer):
 
     def get_bindings(self):
         client = Client(
-            f'{self.config_broker["host"]}:{self.config_broker["port"]}',
-            self.config_broker["user"],
-            self.config_broker["password"],
+            f'{self.connection_config["host"]}:{self.connection_config["port"]}',
+            self.connection_config["user"],
+            self.connection_config["password"],
         )
 
         bindings = client.get_bindings()
         bindings_result = [
-            b for b in bindings if b["source"] in self.config_broker["exchanges"]
+            b for b in bindings if b["source"] in self.connection_config["exchanges"]
         ]
 
         return bindings_result
