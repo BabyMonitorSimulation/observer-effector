@@ -1,9 +1,9 @@
-from project.entity.decider_entity import Decider
+from project.entity.effector_entity import Effector
 from flask import jsonify, request
 from project import app
 
 
-decider = None
+effector = None
 
 
 @app.route("/index", methods=["GET"])
@@ -13,26 +13,26 @@ def index():
 
 @app.route("/adapt", methods=["GET"])
 def adapt():
-    global decider
+    global effector
     scenario = request.args.get('scenario')
-    decider.adapt(scenario)
+    effector.adapt(scenario)
 
     return jsonify({"msg": "Adaptation ocurred"})
 
 
 @app.route("/behave_normal", methods=["GET"])
 def behave_normal():
-    global decider
+    global effector
     scenario = request.args.get('scenario')
-    decider.behave_normal(scenario)
+    effector.behave_normal(scenario)
 
     return jsonify({"msg": "Returned to previous behavior"})
 
 
 @app.route("/configure", methods=["POST"])
 def configure():
-    global decider
-    decider = Decider(
+    global effector
+    effector = Effector(
         request.json["steps_to_adapt"], request.json["steps_for_behave_normal"]
     )
     print("Start OK")

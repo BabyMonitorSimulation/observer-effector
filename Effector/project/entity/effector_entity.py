@@ -1,7 +1,7 @@
 import requests
 
 
-class Decider:
+class Effector:
     def __init__(self, steps_to_adapt, steps_for_behave_normal):
         self.steps_to_adapt = steps_to_adapt
         self.steps_for_behave_normal = steps_for_behave_normal
