@@ -1,19 +1,15 @@
-import json
-import threading
 import socketio
 import requests
 import asyncio
-from project.util.data import add_new
-# from project.util.generate_socket import sio
-from .observer import Observer
-import socketio
+from flask import Flask, request, jsonify
+import threading
 
 
-sio = socketio.Client()
+app = Flask(__name__)
 
 
 class ObserverMiddleware(threading.Thread):
-    def __init__(self, config):
+    def __init__(self, sio, config):
         threading.Thread.__init__(self)
         self.config = config["connection_config"]
         self.token = self.get_socket_token()
@@ -21,6 +17,7 @@ class ObserverMiddleware(threading.Thread):
         self.call_one = True
 
     def run(self):
+        print("Observer Middleware start")
         asyncio.run(
             self.sio.connect(f'{self.config["host"]}:{self.config["port"]}/?token={self.token}',
                         transports=["websocket"],
@@ -42,21 +39,39 @@ class ObserverMiddleware(threading.Thread):
         headers = {"Authorization": f"Bearer {token}"}
         return requests.request("GET", url, headers=headers).json()['token']
 
-    @sio.on('all')
-    def on_message(data):
-        
-        print(f'\n{data}\n')
 
-    @sio.event
-    async def connect():
-        print("I'm connected!")
 
-    @sio.event
-    def connect_error(err):
-        print(err)
-        print("\nThe connection failed!\n")
-        sio.disconnect()
+sio = socketio.Client(logger=True, engineio_logger=True)
+@sio.on('all')
+def on_message(data):
+    print(f'\n{data}\n')
 
-    @sio.event
-    def disconnect():
-        print("I'm disconnected!")
+
+@sio.event
+async def connect():
+    print("I'm connected!")
+
+
+@sio.event
+def connect_error(err):
+    print(err)
+    print(repr(sio))
+
+    print("\nThe connection failed!\n")
+    sio.disconnect()
+
+
+@sio.event
+def disconnect():
+    print("I'm disconnected!")
+
+
+@app.route('/', methods=["POST"])
+def index():
+    global sio
+    ObserverMiddleware(sio, request.json).start()
+    return jsonify({"msg": "Observer Middleware start"})
+
+
+if __name__ == "__main__":
+    app.run(port=4004)
