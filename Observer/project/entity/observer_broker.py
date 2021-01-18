@@ -10,6 +10,7 @@ import requests
 class ObserverBroker(threading.Thread, Observer):
     def __init__(self, config):
         threading.Thread.__init__(self)
+        Observer.__init__(sconfig)
         self.queue = "observer"
         self.connection_config = config["connection_config"]
         self.connection = pika.BlockingConnection(
@@ -65,7 +66,7 @@ class ObserverBroker(threading.Thread, Observer):
         if except_scen and self.call_one:
             print("==== Cenário excepcional ====")
             requests.get(
-                url=f"http://localhost:5002/adapt?scenario={self.scenario_running}"
+                url=f"http://localhost:4002/adapt?scenario={self.scenario_running}"
             )
             self.call_one = False
 
@@ -74,7 +75,7 @@ class ObserverBroker(threading.Thread, Observer):
         if self.check_normal_scenario(current_scenario) and except_scen:
             print("==== Cenário NORMAL ====")
             requests.get(
-                url=f"http://localhost:5002/behave_normal?scenario={self.scenario_running}"
+                url=f"http://localhost:4002/behave_normal?scenario={self.scenario_running}"
             )
             self.essential_scenarios = []
             self.call_one = True
@@ -90,6 +91,3 @@ class ObserverBroker(threading.Thread, Observer):
 
     def stop(self):
         raise SystemExit()
-
-    
-    

@@ -15,7 +15,7 @@ def index():
 
 @app.route("/start", methods=["POST"])
 def start():
-    print(request.json)
+    global obs_mw
     if request.json["interface_type"] == "observer":
         ObserverBroker(request.json).start()
 
@@ -23,4 +23,3 @@ def start():
         ObserverMiddleware(request.json).start()
 
     return jsonify({"msg": "Observer Start"})
-

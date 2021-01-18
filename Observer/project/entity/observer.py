@@ -62,6 +62,7 @@ class Observer:
                         break
             if is_excp:
                 self.scenario_running = key
+        
         return is_excp
 
     def is_essential_scenarios(self, current_scenario):

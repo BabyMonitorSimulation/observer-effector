@@ -18,6 +18,7 @@ def start():
         requests.post("http://localhost:4001/start", json=config_observer)
         requests.post("http://localhost:4002/configure", json=config_effector)
 
+
     if request.json["interface_type"] == "middleware":
         config_observer = data_config_observer(request.json)
         config_effector = data_config_effector(request.json)
